@@ -59,8 +59,10 @@
         <link rel="stylesheet" href="style.css">
         <script>
             document.addEventListener("DOMContentLoaded", function() {
-                SetName();
+                SetName();               
                 function actualizarRelojes() {
+                let date = new Date();
+                let ahora;
                 const zonas = [
                     { id: 'pst', zona: 'America/Los_Angeles', nombre: 'Pacific Standard Time (PST)' },
                     { id: 'ast', zona: 'America/Puerto_Rico', nombre: 'Atlantic Standard Time (AST)' },
@@ -71,18 +73,18 @@
                 ];
 
                 zonas.forEach(({ id, zona, nombre }) => {
-                    const ahora = new Date().toLocaleTimeString('es-ES', {
+                    ahora = date.toLocaleTimeString('en-US', {
                     timeZone: zona,
                     hour: '2-digit',
                     minute: '2-digit',
                     hour12: true
                     });
                     document.getElementById(id).textContent = `${nombre}: ${ahora}`;
-                });
+                });                
             }
-
+            ShowIM();
             setInterval(actualizarRelojes, 1000);
-            actualizarReloj();
+            actualizarReloj();            
             });
         </script>
     </head>    
@@ -96,6 +98,12 @@
             <div class="reloj" id="cst"></div>
             <div class="reloj" id="est"></div>
             <div class="reloj" id="mst"></div>
+        </fieldset>
+        <fieldset>
+            <legend><b>Engineer Alias</b></legend>
+            <div>
+                <legend>Alias: <input id="eAlias" placeholder="Here goes your Alias" onchange="SetDate()"></legend>
+            </div>
         </fieldset>
         <fieldset>
             <legend><b>Case Information</b></legend>
@@ -140,7 +148,7 @@
             </div>
             <legend>Case Languange:</legend>
                 <div>
-                    <input type="radio" id="eng" name="language" value="eng">
+                    <input type="radio" id="eng" name="language" value="eng" checked="True">
                     <label for="eng">English</label>
                     <input type="radio" id="esp" name="language" value="esp">
                     <label for="esp">Spanish</label>
@@ -167,13 +175,153 @@
         </fieldset>
 
         <div class="tab-buttons">
-            <button class="tab-btn active" data-tab="tab1">SLA</button>
-            <button class="tab-btn" data-tab="tab2">Premier SLA</button>
-            <button class="tab-btn" data-tab="tab3">Closing</button>
-            <button class="tab-btn" data-tab="tab4">SAW Request</button>
+            <button class="tab-btn active" data-tab="tab1">Master Note</button>
+            <button class="tab-btn" data-tab="tab2">SLA</button>
+            <button class="tab-btn" data-tab="tab3">Premier SLA</button>
+            <button class="tab-btn" data-tab="tab4">Closing</button>
+            <button class="tab-btn" data-tab="tab5">SAW Request</button>
         </div>
 
         <div id="tab1" class="tab-content active">
+            <fieldset>
+                <legend>Case Missing Information</legend>                
+                <div>
+                    <legend>Is SAW Request? <input type="checkbox" id="SAW" onchange="HideDeviceInfo()"></legend>
+                </div>
+
+                <div>
+                    <legend>Customer Type:</legend>
+                    <input type="radio" id="prem" name="cType" value="Premier" onchange="ShowIM()">
+                    <label for="prem">Premier</label>
+                    <input type="radio" id="part" name="cType" value="Partner" onchange="ShowIM()">
+                    <label for="part">Partner</label>
+                    <input type="radio" id="pro" name="cType" value="Pro" checked="True" onchange="ShowIM()" onload="ShowIM()">
+                    <label for="pro">Pro</label>
+                </div>
+            
+                <div id="imInfo">
+                    <legend>IM Name: <input type="text" id="imName" placeholder="Here goes the IM Name"></legend>
+                    <legend>IM Contact: <input type="text" id="imCont" placeholder="Here goes the IM contact"></legend>
+                </div>
+
+                <div>
+                    <legend>Country: <input type="text" id="country" placeholder="Customer Country"></legend>
+                    <legend>Time Zone: <input type="text" id="TZ" placeholder="Customer Time Zone"></legend>
+                </div>
+                <script>
+                    function HideDeviceInfo(){
+                        let SAW = document.getElementById("SAW").checked;
+                        if(SAW === true){
+                            document.getElementById("deviceInfo").style.display = "none";
+                            document.getElementById("policyInfo").style.display = "none";
+                        }
+                        else{
+                            document.getElementById("deviceInfo").style.display = "block";
+                            document.getElementById("policyInfo").style.display = "block";
+                        }
+                    }
+
+                    function ShowIM()
+                    {
+                        const res = document.querySelector('input[name="cType"]:checked').value;
+
+                        if(res === "Pro"){
+                            document.getElementById("imInfo").style.display = "none";
+                            document.getElementById("imName").value = "N/A";
+                            document.getElementById("imCont").value = "N/A";
+                        }
+                        else{
+                            document.getElementById("imInfo").style.display = "block";
+                            document.getElementById("imName").value = "";
+                            document.getElementById("imCont").value = "";
+                        }
+                    }
+                </script>
+            </fieldset>
+            <fieldset>
+                <legend>Objective</legend>
+                <div>
+                    <legend>Tenant ID: <input type="text" id="tID" placeholder="Here goes the Tenant ID"></legend>
+                    <legend>MDM Authority: <input type="text" id="mdm" placeholder="Here goes the MDM Authority"></legend>
+                    <legend>ASU: <input type="text" id="asu" placeholder="Here goes the ASU"></legend>
+                    <legend>Environment: <input type="text" id="env" placeholder="Here goes the case Environment"></legend>
+                    <legend>Date Issue Started: <input type="text" id="issueS" placeholder="Here goes when issue started"></legend>
+                    <legend>Customer repro only? <input type="checkbox" id="reproOnly"></legend>
+                    <legend>Are you able to reproduce the same problem in your tenant? <input type="checkbox" id="intRepro"></legend>
+                    <div id="steps">
+                        <legend>Repro Steps:</legend>
+                    </div>
+                </div>
+            </fieldset>
+            <fieldset id="deviceInfo">
+                <legend>Info for Intune Cases</legend>
+                <div>
+                    <legend>User Info:</legend>
+                    <div>
+                        <legend>UPN: <input type="text" id="upn" placeholder="Here goes the User UPN"></legend>
+                        <legend>User ID: <input type="text" id="uID" placeholder="Here goes the User ID"></legend>
+                    </div>
+                </div>
+                <div>
+                    <legend>Device Info:</legend>
+                    <div>
+                        <legend>Intune Device ID: <input type="text" id="deviceID" placeholder="Here goes the Intune Device ID"></legend>
+                        <legend>Device Name: <input type="text" id="deviceName" placeholder="Here goes the Device Name"></legend>
+                        <legend>Serial Number: <input type="text" id="serialNum" placeholder="Here goes the Serial Number"></legend>
+                        <legend>Device Platform: <select id="OS">
+                            <option value="Windows">Windows</option>
+                            <option value="Android">Android</option>
+                            <option value="iOS/iPadOS">iOS/iPadOS</option>
+                            <option value="MacOS">MacOS</option>
+                            <option value="Linux">Linux</option>
+                        </select></legend>
+                        <legend>OS Version & Build: <input type="text" id="OSversion" placeholder="Here goes the OS Version and Build"></legend>
+                        <legend>Enrollment Method Used: <input type="text" id="enrMethod"></legend>
+                    </div>
+                </div>
+            </fieldset>
+            <fieldset id="policyInfo">
+                <legend>Should be collected if related to Issue</legend>
+                <div>
+                    <legend>Policy/Profile Name: <input type="text" id="policyName" placeholder="Here goes the policy or profile name"></legend>
+                    <legend>Policy ID: <input type="text" id="policyID" placeholder="Here goes the policy ID"></legend>
+                    <legend>Policy Type: <input type="text" id="policyType" placeholder="Here goes the policy type"></legend>
+                    <legend>Affected Settings: </legend>
+                </div>
+
+                <div>
+                    <legend>Assigend to: <select id="assignment">
+                        <option value="Devices">Devices</option>
+                        <option value="Users">Users</option>
+                    </select></legend>
+                    <legend>App Name: <input type="text" id="appName" placeholder="Here goes the App name"></legend>
+                    <legend>App ID: <input type="text" id="appID" placeholder="Here goes the App ID"></legend>                    
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Completed Actions Taken and Results</legend>
+                <div>
+                    <div id="date"></div>
+                    <div id="notes" style="display: none;">
+                        <textarea style="width: 500pt; height: 200pt; text-align: left; vertical-align: top; padding: 0.5em;" rows="5" cols="30"></textarea>
+                    </div>
+                </div>
+                <script>
+                    function SetDate(){
+                        let alias = document.getElementById("eAlias").value;
+                        const date = new Date();
+                        document.getElementById("date").innerHTML = date.toLocaleDateString('en-US', {
+                            month:'2-digit',
+                            day: '2-digit'
+                        })+" - " + "<b>"+alias+"</b>";
+                        document.getElementById("notes").style.display = "block";
+                    }
+                </script>
+            </fieldset>
+        </div>
+
+        <div id="tab2" class="tab-content">
             <fieldset>
                 <legend>Business Hours to Contact:</legend>                
                 <select id="bHours">
@@ -400,7 +548,7 @@
             </fieldset>
         </div>
 
-        <div id="tab2" class="tab-content">
+        <div id="tab3" class="tab-content">
             <fieldset style="display: none">
                 <legend>Files Upload Link:</legend>
                 <input type="text" id="cAtt" placeholder="Here goes the case attatchements upload link" style="height: 25px; width: 400px;">
@@ -479,7 +627,7 @@
 
         </div>
 
-        <div id="tab3" class="tab-content">
+        <div id="tab4" class="tab-content">
             <div>
                 <legend style="display: none">Feedback URL</legend>
                 <input type="text" id="Feedback" placeholder="Here goes the survey url" style="display: none">
@@ -535,13 +683,13 @@
                 </script>
             </div>
 
-            <fieldset id="cResult" style="user-select: all;">
+            <fieldset id="cResult">
                 <legend>Generated Template</legend>                
                 <div id="closureResult" contenteditable="false" style="border: 1px solid #ccc; padding: 10px;"></div>
             </fieldset>
         </div>
 
-        <div id="tab4" class="tab-content">
+        <div id="tab5" class="tab-content">
             <fieldset>
                 <legend>Request Info</legend>
                 <div>

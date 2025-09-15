@@ -69,7 +69,9 @@
                     { id: 'mst', zona: 'America/Denver', nombre: 'Mountain Standard Time (MST)' },
                     { id: 'cst', zona: 'America/Chicago', nombre: 'Central Standar Time (CST)' },
                     { id: 'est', zona: 'America/New_York', nombre: 'Easter Standard Time (EST)' },
-                    { id: 'nic', zona: 'America/Managua', nombre: 'Hora Nicaragua'}
+                    { id: 'nic', zona: 'America/Managua', nombre: 'Hora Nicaragua'},
+                    { id: 'chl', zona: 'America/Santiago', nombre:'Hora de Chile'},
+                    { id: 'col', zona: 'America/Bogota', nombre:'Hora de Colombia'},
                 ];
 
                 zonas.forEach(({ id, zona, nombre }) => {
@@ -93,13 +95,15 @@
         <fieldset>
             <legend><b>Time Zones</b></legend>
             <div class="reloj" id="nic"></div>
+            <div class="reloj" id="chl"></div>
+            <div class="reloj" id="col"></div>
             <div class="reloj" id="ast"></div>
             <div class="reloj" id="pst"></div>
             <div class="reloj" id="cst"></div>
             <div class="reloj" id="est"></div>
-            <div class="reloj" id="mst"></div>
+            <div class="reloj" id="mst"></div>            
         </fieldset>
-        <fieldset>
+        <fieldset style="display: none;">
             <legend><b>Engineer Alias</b></legend>
             <div>
                 <legend>Alias: <input id="eAlias" placeholder="Here goes your Alias" onchange="SetDate()"></legend>
@@ -175,14 +179,15 @@
         </fieldset>
 
         <div class="tab-buttons">
-            <button class="tab-btn active" data-tab="tab1">Master Note</button>
-            <button class="tab-btn" data-tab="tab2">SLA</button>
+            <button class="tab-btn" data-tab="tab1" disabled="true">Master Note</button>
+            <button class="tab-btn active" data-tab="tab2">SLA</button>
             <button class="tab-btn" data-tab="tab3">Premier SLA</button>
-            <button class="tab-btn" data-tab="tab4">Closing</button>
-            <button class="tab-btn" data-tab="tab5">SAW Request</button>
+            <button class="tab-btn" data-tab="tab4">Follow Up</button>
+            <button class="tab-btn" data-tab="tab5">Closing</button>
+            <button class="tab-btn" data-tab="tab6">SAW Request</button>
         </div>
 
-        <div id="tab1" class="tab-content active">
+        <div id="tab1" class="tab-content">
             <fieldset>
                 <legend>Case Missing Information</legend>                
                 <div>
@@ -321,7 +326,7 @@
             </fieldset>
         </div>
 
-        <div id="tab2" class="tab-content">
+        <div id="tab2" class="tab-content active">
             <fieldset>
                 <legend>Business Hours to Contact:</legend>                
                 <select id="bHours">
@@ -628,6 +633,116 @@
         </div>
 
         <div id="tab4" class="tab-content">
+            <fieldset>
+                <legend>Follow Up Info</legend>
+                <div>
+                    <legend>Strike Number:</legend>
+                    <input type="radio" id="st" name="sNum" value="1">
+                    <label for="st">1</label>
+                    <input type="radio" id="nd" name="sNum" value="2">
+                    <label for="nd">2</label>
+                    <input type="radio" id="th" name="sNum" value="3">
+                    <label for="th">3</label>
+                </div>
+                <div><legend>Time of the Call UTC-6: <input type="time" id="callTime"></legend></div>
+                <div><legend>Case Description: <input type="text" id="followDes" placeholder="Here goes the case description"></legend></div>
+                <button onclick="GenerateFollowUp()">Generate</button>
+            </fieldset>
+
+            <fieldset>
+                <legend>Template Result</legend>
+                <div id="followUp"></div>
+            </fieldset>
+            <script>
+                function GenerateFollowUp(){
+                    const cName = document.getElementById("clientNameF").value;
+                    const cNumber = document.getElementById("caseNumF").value;
+                    const cPhone = document.getElementById("clientPhoneF").value;
+                    const cDes = document.getElementById("followDes").value;
+                    const timeReference = document.getElementById("callTime").value;
+                    const slaLanguage = document.querySelector('input[name="language"]:checked').value;
+                    const strikeNum = document.querySelector('input[name="sNum"]:checked').value;
+
+                    //#region 12 Hours format conversor
+                    let [h, min] = timeReference.split(':');
+                    let hours = parseInt(h,10);
+                    let dayzone = '';
+                    if(hours === 0){
+                        hours = 12;
+                        dayzone = 'am';
+                    }
+                    else if(hours === 12){
+                        dayzone = 'pm';
+                    }
+                    else if(hours > 12){
+                        hours -= 12;
+                        dayzone = 'pm';
+                    }
+                    else{
+                        dayzone = 'am';
+                    }
+                    let callTime = hours+":"+min+dayzone;
+                    //#endregion
+
+
+                    if(slaLanguage === "eng")
+                    {
+                        if(strikeNum === "1"){
+                            template = "Dear "+cName+",\n\n"+
+                            "We have tried to contact you just now at <b>"+callTime+" UTC-6</b> at the phone number <b>"+cPhone+"</b>, registered in the ticket profile; however, we were unable to reach you.\n\n"+
+                            "I am following up as we have not yet received a response or update from you regarding your support request <b>"+cNumber+"</b> related to <b>"+cDes+"</b>. Your cooperation in providing the pending information would be greatly appreciated.\n\n"+
+                            "Please respond to this email confirming your availability (date and time) so that I can try to contact you at a time that is most convenient for you.\n\n"+
+                            "If we do not hear from you, we will attempt to reach out again within the next business day.\n\n"+
+                            "Thank you for your prompt attention to this matter.\n\n";
+                        }
+                        else if(strikeNum === "2"){
+                            template = "Dear "+cName+",\n\n"+
+                            "We have tried to contact you just now at <b>"+callTime+" UTC-6</b> at the phone number <b>"+cPhone+"</b>, registered in the ticket profile; however, we were unable to reach you.\n\n"+
+                            "I would like to take this opportunity to follow up on your support request <b>"+cNumber+"</b>. This is the second time we have attempted to contact you regarding your request related to <b>"+cDes+"</b>.\n\n"+
+                            "We have not received any response or update from you, so we appreciate your cooperation with the pending information. Please respond to this email confirming your availability (date and time) so that we can try to contact you again at a time that is most convenient for you.\n\n"+
+                            "If we do not receive any response from you, we will try to contact you within the next business day.\n\n"+
+                            "Kind regards,\n\n";
+                        }
+                        else if(strikeNum === "3"){
+                            template = "Dear "+cName+",\n\n"+
+                            "We have tried to contact you just now at <b>"+callTime+" UTC-6</b> at the phone number <b>"+cPhone+"</b>, registered in the ticket profile; however, we were unable to reach you.\n\n"+
+                            "We have made every effort to reach you to follow up on your support request <b>"+cNumber+"</b>, but we have not yet received a response. I understand that you may have had other commitments and responsibilities to attend to, so we will be archiving the case the next business day.\n\n"+
+                            "If the issue recurs or if you have additional questions, please contact my team manager using the contact information below to request the reactivation of this case.\n\n"+
+                            "Kind regards, \n\n";
+                        }
+                    }
+                    else if(slaLanguage === "esp"){
+                        if(strikeNum === "1"){
+                            template = "Estimado "+cName+",\n\n"+
+                            "He intentado contactarle ahora mismo <b>"+callTime+" UTC-6</b> al número de teléfono <b>"+cPhone+"</b>, registrado en el perfil del caso, sin embargo, no pude localizarlo.\n\n"+
+                            "Debido a que no hemos recibido respuesta de su parte, quiero aprovechar esta oportunidad para dar seguimiento a su solicitud de soporte <b>"+cNumber+"</b> relacionado con <b>"+cDes+"</b>.\n\n"+
+                            "Por favor, responda a este correo confirmando su horario de disponibilidad (fecha y hora) para intentar comunicarme en una ventana de tiempo que más le convenga. Si no recibo ninguna respuesta de su parte, intentaré ponerme en contacto con usted en el próximo día hábil.\n\n"+
+                            "Agradecemos su pronta respuesta.\n\n"+
+                            "Saludos cordiales,\n\n";
+                        }
+                        else if(strikeNum === "2"){
+                            template = "Estimado "+cName+",\n\n"+
+                            "He intentado contactarle ahora mismo <b>"+callTime+" UTC-6</b> al número de teléfono <b>"+cPhone+"</b>, registrado en el perfil del caso, sin embargo, no pude localizarlo.\n\n"+
+                            "Quiero aprovechar esta oportunidad para dar seguimiento a su solicitud de soporte <b>"+cNumber+"</b>, Esta es la segunda vez que intentamos comunicarnos con usted respecto a su solicitud relacionada con <b>"+cDes+"</b>.\n\n"+
+                            "No hemos recibido ninguna respuesta o noticia de su parte, por lo que agradecemos su cooperación con la información pendiente. Por favor, responda a este correo confirmando su horario de disponibilidad (fecha y hora) para intentar comunicarme nuevamente en una ventana de tiempo que más le convenga.\n\n"+
+                            "Si no recibo ninguna respuesta de su parte, intentaré ponerme en contacto con usted en el próximo día hábil.\n\n"+
+                            "Saludos cordiales,\n\n";
+                        }
+                        else if(strikeNum === "3"){
+                            template = "Estimado "+cName+",\n\n"+
+                            "He intentado contactarle ahora mismo <b>"+callTime+" UTC-6</b> al número de teléfono <b>"+cPhone+"</b>, registrado en el perfil del caso, sin embargo, no pude localizarlo.\n\n"+
+                            "Hemos hecho todo lo posible por comunicarnos con usted para darle continuidad a su solicitud de soporte <b>"+cNumber+"</b>, pero aún no hemos recibido respuesta. Entiendo que puede haber tenido otros compromisos y responsabilidades que atender, por lo cual estaré archivando el caso el próximo día hábil.\n\n"+
+                            "Si el problema vuelve a ocurrir o si tiene preguntas adicionales, por favor comuníquese con mi gerente de equipo utilizando la información de contacto a continuación para solicitar la reactivación de este caso.\n\n"+
+                            "Saludos cordiales,\n\n";
+                        }
+                    }
+
+                    document.getElementById("followUp").innerHTML = template.replace(/\n/g,"<br>");
+                }
+            </script>
+        </div>
+
+        <div id="tab5" class="tab-content">
             <div>
                 <legend style="display: none">Feedback URL</legend>
                 <input type="text" id="Feedback" placeholder="Here goes the survey url" style="display: none">
@@ -689,7 +804,7 @@
             </fieldset>
         </div>
 
-        <div id="tab5" class="tab-content">
+        <div id="tab6" class="tab-content">
             <fieldset>
                 <legend>Request Info</legend>
                 <div>

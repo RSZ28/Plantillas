@@ -808,6 +808,11 @@
             <fieldset>
                 <legend>Request Info</legend>
                 <div>
+                    <legend>Autopilot Device Upload Error</legend>
+                    <input id="808" type="radio" name="eType" value="808">
+                    <label for="808">808</label>
+                    <input id="806" type="radio" name="eType" value="806" checked="true">
+                    <label for="806">806</label>
                     <legend>Device/s Serial Number/s(Multiple serials must be separated by comas)</legend>
                     <input id="cSerial" type="text" placeholder="Here goes the device/s serial number/s">
                     <legend>Is CSV file collected?<input id="cCSV" type="checkbox" checked="True"></legend>
@@ -821,6 +826,7 @@
 
                     <script>
                         function CompleteRequest(){
+                            const cError = document.querySelector('input[name="eType"]:checked').value;
                             const cSerials = document.getElementById("cSerial").value;
                             const cCSV = document.getElementById("cCSV").checked;
                             const cOwn = document.getElementById("cOwn").checked;
@@ -875,14 +881,26 @@
                                     "<li>Default Domain: "+cDomain+"</li>"+
                                     "<ul>\n\n<b>REMEMBER ADDING CAPTURES OF THE DEVICE SEARCH IN ASSIST365</b>\n\n";
 
-                                    scope = "<b>Issue:</b>\n"+
-                                    "The hardware hash of a device is unable to be uploaded to Intune for the Autopilot enrollment due to error 808, which indicates that the device is registered on another tenant.\n\n"+
-                                    "<b>Cause:</b>\n"+
-                                    "The error occurs because the device's hardware hash is already associated with a different tenant, preventing it from being uploaded to Intune for the Autopilot enrollment.\n\n"+
-                                    "<b>Solution:</b>\n\n"+
-                                    "The deregistration process was completed from our end and the device should be able to register to your company.\n\n"+
-                                    "<b>Scope Agreement:</b>\n"+
-                                    "We will consider the case as resolved and the case ready for closure once the devices "+fxSerials+" are successfully deregistered for the other tenant and you can enroll it to your organization. Alternatively, we will consider this case resolved if we confirm that the problem is caused by a third-party application or is by-design.\n\n";
+                                    if(cError === "808"){
+                                        scope = "<b>Issue:</b>\n"+
+                                        "The hardware hash of a device is unable to be uploaded to Intune for the Autopilot enrollment due to error 808, which indicates that the device is registered on another tenant.\n\n"+
+                                        "<b>Cause:</b>\n"+
+                                        "The error occurs because the device's hardware hash is already associated with a different tenant, preventing it from being uploaded to Intune for the Autopilot enrollment.\n\n"+
+                                        "<b>Solution:</b>\n\n"+
+                                        "The deregistration process was completed from our end and the device should be able to register to your company.\n\n"+
+                                        "<b>Scope Agreement:</b>\n"+
+                                        "We will consider the case as resolved and the case ready for closure once the devices "+fxSerials+" are successfully deregistered from the other tenant and you can enroll it to your organization. Alternatively, we will consider this case resolved if we confirm that the problem is caused by a third-party application or is by-design.\n\n";
+                                    }
+                                    else if(cError === "806"){
+                                        scope = "<b>Issue:</b>\n"+
+                                        "The hardware hash of a device is unable to be uploaded to Intune for the Autopilot enrollment due to error 806, which indicates that the device is already registered on your tenant.\n\n"+
+                                        "<b>Cause:</b>\n"+
+                                        "The error occurs because the device's hardware hash is already associated with your tenant, preventing it from being uploaded to Intune for the Autopilot enrollment.\n\n"+
+                                        "<b>Solution:</b>\n\n"+
+                                        "The deregistration process was completed from our end and the device should be able to register to your company.\n\n"+
+                                        "<b>Scope Agreement:</b>\n"+
+                                        "We will consider the case as resolved and the case ready for closure once the devices "+fxSerials+" are successfully deregistered from your tenant and you can enroll it to your organization. Alternatively, we will consider this case resolved if we confirm that the problem is caused by a third-party application or is by-design.\n\n";
+                                    }
                                 }
                                 else{
                                     noteTemp = "<ul>"+
@@ -894,14 +912,26 @@
                                     "<li>Default Domain: "+cDomain+"</li>"+
                                     "<ul>\n\n<b>REMEMBER ADDING CAPTURES OF THE DEVICE SEARCH IN ASSIST365</b>\n\n";
 
-                                    scope = "<b>Issue:</b>\n"+
-                                    "The hardware hash of a device is unable to be uploaded to Intune for the Autopilot enrollment due to error 808, which indicates that the device is registered on another tenant.\n\n"+
-                                    "<b>Cause:</b>\n"+
-                                    "The error occurs because the device's hardware hash is already associated with a different tenant, preventing it from being uploaded to Intune for the Autopilot enrollment.\n\n"+
-                                    "<b>Solution:</b>\n\n"+
-                                    "The deregistration process was completed from our end and the device should be able to register to your company.\n\n"+
-                                    "<b>Scope Agreement:</b>\n"+
-                                    "We will consider the case as resolved and the case ready for closure once the device "+fxSerials+" is successfully deregistered for the other tenant and you can enroll it to your organization. Alternatively, we will consider this case resolved if we confirm that the problem is caused by a third-party application or is by-design.\n\n";
+                                    if(cError === "808"){
+                                        scope = "<b>Issue:</b>\n"+
+                                        "The hardware hash of a device is unable to be uploaded to Intune for the Autopilot enrollment due to error 808, which indicates that the device is registered on another tenant.\n\n"+
+                                        "<b>Cause:</b>\n"+
+                                        "The error occurs because the device's hardware hash is already associated with a different tenant, preventing it from being uploaded to Intune for the Autopilot enrollment.\n\n"+
+                                        "<b>Solution:</b>\n\n"+
+                                        "The deregistration process was completed from our end and the device should be able to register to your company.\n\n"+
+                                        "<b>Scope Agreement:</b>\n"+
+                                        "We will consider the case as resolved and the case ready for closure once the device "+fxSerials+" is successfully deregistered from the other tenant and you can enroll it to your organization. Alternatively, we will consider this case resolved if we confirm that the problem is caused by a third-party application or is by-design.\n\n";
+                                    }
+                                    else if(cError === "806"){
+                                        scope = "<b>Issue:</b>\n"+
+                                        "The hardware hash of a device is unable to be uploaded to Intune for the Autopilot enrollment due to error 806, which indicates that the device is already registered on your tenant.\n\n"+
+                                        "<b>Cause:</b>\n"+
+                                        "The error occurs because the device's hardware hash is already associated with your tenant, preventing it from being uploaded to Intune for the Autopilot enrollment.\n\n"+
+                                        "<b>Solution:</b>\n\n"+
+                                        "The deregistration process was completed from our end and the device should be able to register to your company.\n\n"+
+                                        "<b>Scope Agreement:</b>\n"+
+                                        "We will consider the case as resolved and the case ready for closure once the device "+fxSerials+" is successfully deregistered from your tenant and you can enroll it to your organization. Alternatively, we will consider this case resolved if we confirm that the problem is caused by a third-party application or is by-design.\n\n";
+                                    }
                                 }
 
                                 msgTemp = "Hello Team,\n\n"+

@@ -86,22 +86,26 @@
             }
             ShowIM();
             setInterval(actualizarRelojes, 1000);
-            actualizarReloj();            
+            actualizarReloj();
             });
         </script>
     </head>    
     <body>
         <h1>SLA Template</h1>        
-        <fieldset>
+        <fieldset style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
             <legend><b>Time Zones</b></legend>
-            <div class="reloj" id="nic"></div>
-            <div class="reloj" id="chl"></div>
-            <div class="reloj" id="col"></div>
-            <div class="reloj" id="ast"></div>
-            <div class="reloj" id="pst"></div>
-            <div class="reloj" id="cst"></div>
-            <div class="reloj" id="est"></div>
-            <div class="reloj" id="mst"></div>            
+            <fieldset>
+                <div class="reloj" id="nic"></div>
+                <div class="reloj" id="chl"></div>
+                <div class="reloj" id="col"></div>
+                <div class="reloj" id="ast"></div>
+            </fieldset>
+            <fieldset>
+                <div class="reloj" id="pst"></div>
+                <div class="reloj" id="cst"></div>
+                <div class="reloj" id="est"></div>
+                <div class="reloj" id="mst"></div> 
+            </fieldset>
         </fieldset>
         <fieldset style="display: none;">
             <legend><b>Engineer Alias</b></legend>
@@ -261,14 +265,14 @@
             <fieldset id="deviceInfo">
                 <legend>Info for Intune Cases</legend>
                 <div>
-                    <legend>User Info:</legend>
+                    <legend><b>User Info:</b></legend>
                     <div>
                         <legend>UPN: <input type="text" id="upn" placeholder="Here goes the User UPN"></legend>
                         <legend>User ID: <input type="text" id="uID" placeholder="Here goes the User ID"></legend>
                     </div>
                 </div>
                 <div>
-                    <legend>Device Info:</legend>
+                    <legend><b>Device Info:</b></legend>
                     <div>
                         <legend>Intune Device ID: <input type="text" id="deviceID" placeholder="Here goes the Intune Device ID"></legend>
                         <legend>Device Name: <input type="text" id="deviceName" placeholder="Here goes the Device Name"></legend>
@@ -281,7 +285,7 @@
                             <option value="Linux">Linux</option>
                         </select></legend>
                         <legend>OS Version & Build: <input type="text" id="OSversion" placeholder="Here goes the OS Version and Build"></legend>
-                        <legend>Enrollment Method Used: <input type="text" id="enrMethod"></legend>
+                        <legend>Enrollment Method Used: <input type="text" id="enrMethod" placeholder="Here goes the enrollment method"></legend>
                     </div>
                 </div>
             </fieldset>
@@ -315,12 +319,19 @@
                 <script>
                     function SetDate(){
                         let alias = document.getElementById("eAlias").value;
-                        const date = new Date();
-                        document.getElementById("date").innerHTML = date.toLocaleDateString('en-US', {
-                            month:'2-digit',
-                            day: '2-digit'
-                        })+" - " + "<b>"+alias+"</b>";
-                        document.getElementById("notes").style.display = "block";
+                        if(alias.includes("@microsoft.com")){
+                            const date = new Date();
+                            document.getElementById("date").innerHTML = date.toLocaleDateString('en-US', {
+                                month:'2-digit',
+                                day: '2-digit'
+                            })+" - " + "<b>"+alias+"</b>";
+                            document.getElementById("notes").style.display = "block";
+                            document.getElementById("date").style.display = "block";
+                        }
+                        else{
+                            document.getElementById("notes").style.display = "none";
+                            document.getElementById("date").style.display = "none";
+                        }
                     }
                 </script>
             </fieldset>

@@ -85,6 +85,7 @@
                 });                
             }
             ShowIM();
+            Look4Cases();
             setInterval(actualizarRelojes, 1000);
             actualizarReloj();
             });
@@ -107,83 +108,120 @@
                 <div class="reloj" id="mst"></div> 
             </fieldset>
         </fieldset>
-        <fieldset style="display: none;">
+        <fieldset style="display: block;">
             <legend><b>Engineer Alias</b></legend>
             <div>
                 <legend>Alias: <input id="eAlias" placeholder="Here goes your Alias" onchange="SetDate()"></legend>
             </div>
         </fieldset>
-        <fieldset>
-            <legend><b>Case Information</b></legend>
-            <div>
-                Do you know the client's name?
-                <input type="checkbox" id="nameRes" checked="True" onchange="SetName()">
+        <fieldset style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <fieldset>
+                <legend><b>Case Information</b></legend>
+                <div>
+                    Do you know the client's name?
+                    <input type="checkbox" id="nameRes" checked="True" onchange="SetName()">
+                    <script>
+                        function SetName(){
+                            const check = document.getElementById("nameRes");
+                            const field = document.getElementById("clientNameF");
+                            field.value = check.checked ? "" : "Admin";
+                            field.readOnly = !check.checked ? true : false;
+                        }
+                    </script>
+                </div>
+                <div>
+                    Client's name:
+                    <input type="text" id="clientNameF" placeholder="Here goes the client's name">
+                </div>
+                <div>
+                    Case number: 
+                    <style>
+                        input[type=number]::-webkit-inner-spin-button,
+                        input[type=number]::-webkit-outer-spin-button{
+                            -webkit-appearance: none;
+                            margin: 0;
+                        }
+
+                        input[type=number]{
+                            appearance: textfield;
+                        }
+                    </style>
+                    <input type="number" id="caseNumF" placeholder="Here goes the case number">
+                </div>
+                <div>
+                    Client's Email:
+                    <input type="email" id="clientEmailF" placeholder="Here goes the client's email">
+                </div>
+                <div>
+                    Client's Phone Number:
+                    <input type="text" id="clientPhoneF" placeholder="Here goes the client's phone">
+                </div>
+                <legend>Case Languange:</legend>
+                    <div>
+                        <input type="radio" id="eng" name="language" value="eng" checked="True">
+                        <label for="eng">English</label>
+                        <input type="radio" id="esp" name="language" value="esp">
+                        <label for="esp">Spanish</label>
+                    </div>
+                <button onclick="ClearFields()">Clear Fields</button>
                 <script>
-                    function SetName(){
-                        const check = document.getElementById("nameRes");
-                        const field = document.getElementById("clientNameF");
-                        field.value = check.checked ? "" : "Admin";
-                        field.readOnly = !check.checked ? true : false;
+                    const slaLanguage = document.querySelectorAll('input[name="language"]');
+                    const cKName = document.getElementById("nameRes");
+                    const cName = document.getElementById("clientNameF");
+                    const cNumber = document.getElementById("caseNumF");
+                    const cEmail = document.getElementById("clientEmailF");
+                    const cPhone = document.getElementById("clientPhoneF");
+
+                    function ClearFields(){
+                        cNumber.value = "";
+                        cEmail.value = "";
+                        cPhone.value = "";
+                        if(cKName.checked === true) {
+                            cName.value = "";
+                        }
+                        //slaLanguage.forEach(r => r.checked = false);
                     }
                 </script>
-            </div>
-            <div>
-                Client's name:
-                <input type="text" id="clientNameF" placeholder="Here goes the client's name">
-            </div>
-            <div>
-                Case number: 
-                <style>
-                    input[type=number]::-webkit-inner-spin-button,
-                    input[type=number]::-webkit-outer-spin-button{
-                        -webkit-appearance: none;
-                        margin: 0;
-                    }
+            </fieldset>
+            <fieldset>
+                <legend><b>Stored Cases</b></legend>
+                <div id="storedC">
 
-                    input[type=number]{
-                        appearance: textfield;
-                    }
-                </style>
-                <input type="number" id="caseNumF" placeholder="Here goes the case number">
-            </div>
-            <div>
-                Client's Email:
-                <input type="email" id="clientEmailF" placeholder="Here goes the client's email">
-            </div>
-            <div>
-                Client's Phone Number:
-                <input type="text" id="clientPhoneF" placeholder="Here goes the client's phone">
-            </div>
-            <legend>Case Languange:</legend>
-                <div>
-                    <input type="radio" id="eng" name="language" value="eng" checked="True">
-                    <label for="eng">English</label>
-                    <input type="radio" id="esp" name="language" value="esp">
-                    <label for="esp">Spanish</label>
                 </div>
-            <button onclick="ClearFields()">Clear Fields</button>
-            <script>
-                const slaLanguage = document.querySelectorAll('input[name="language"]');
-                const cKName = document.getElementById("nameRes");
-                const cName = document.getElementById("clientNameF");
-                const cNumber = document.getElementById("caseNumF");
-                const cEmail = document.getElementById("clientEmailF");
-                const cPhone = document.getElementById("clientPhoneF");
+                <script>
+                    function ClearButtonsPane(){
+                        const casesPane = document.getElementById("storedC");
 
-                function ClearFields(){
-                    cNumber.value = "";
-                    cEmail.value = "";
-                    cPhone.value = "";
-                    if(cKName.checked === true) {
-                        cName.value = "";
+                        casesPane.childNodes.forEach(function (c) {
+                            casesPane.removeChild(c)
+                        });
+
                     }
-                    slaLanguage.forEach(r => r.checked = false);
-                }
-            </script>
+
+                    function Look4Cases(){
+                        const allKeys = Object.keys(localStorage);
+                        const casesPane = document.getElementById("storedC");
+
+                        ClearButtonsPane();
+
+                        if(allKeys.length > 0){
+                            for(let i=0; i<allKeys.length;i++){
+                                let C = JSON.parse(localStorage.getItem(allKeys[i]));
+                                let btn = document.createElement("button");
+                                btn.name = C.cNumber;
+                                btn.textContent = "Case: "+C.cNumber;
+                                
+                                btn.onclick = function () {GetCase(btn);};
+                                casesPane.appendChild(btn);
+                            }
+                        }
+                    }
+                </script>
+            </fieldset>
         </fieldset>
 
         <div class="tab-buttons">
-            <button class="tab-btn" data-tab="tab1" disabled="true">Master Note</button>
+            <button class="tab-btn" data-tab="tab1">Master Note</button>
             <button class="tab-btn active" data-tab="tab2">SLA</button>
             <button class="tab-btn" data-tab="tab3">Premier SLA</button>
             <button class="tab-btn" data-tab="tab4">Follow Up</button>
@@ -310,11 +348,21 @@
 
             <fieldset>
                 <legend>Completed Actions Taken and Results</legend>
-                <div>
+                <div id="newAction" style="display: none;">
                     <div id="date"></div>
-                    <div id="notes" style="display: none;">
-                        <textarea style="width: 500pt; height: 200pt; text-align: left; vertical-align: top; padding: 0.5em;" rows="5" cols="30"></textarea>
+                    <div id="notes" style="display: block;">
+                        <fieldset contenteditable="true" id="dayResum" style="
+                            width: 400pt;
+                            height: 150pt;
+                            text-align: left;
+                            vertical-align: top;
+                            padding: 0.5em;
+                            overflow: auto;
+                            word-wrap: break-word;
+                            white-space: pre-wrap;"
+                            rows="5" cols="30"></fieldset>
                     </div>
+                    <button onclick="MasterNote()">Save Master Note</button>
                 </div>
                 <script>
                     function SetDate(){
@@ -325,16 +373,58 @@
                                 month:'2-digit',
                                 day: '2-digit'
                             })+" - " + "<b>"+alias+"</b>";
-                            document.getElementById("notes").style.display = "block";
-                            document.getElementById("date").style.display = "block";
+                            //document.getElementById("notes").style.display = "block";
+                            //document.getElementById("date").style.display = "block";
+                            document.getElementById("newAction").style.display = "block";
                         }
                         else{
-                            document.getElementById("notes").style.display = "none";
-                            document.getElementById("date").style.display = "none";
+                            //document.getElementById("notes").style.display = "none";
+                            document.getElementById("newAction").style.display = "none";
+                            //document.getElementById("date").style.display = "none";
                         }
                     }
                 </script>
             </fieldset>
+
+            <fieldset>
+                <legend>Master Note</legend>
+            </fieldset>
+
+            <script>
+                function MasterNote(){
+                    let ms = {
+                        cName: cName.value,
+                        cNumber: cNumber.value,
+                        cEmail: cEmail.value,
+                        cPhone: cPhone.value,
+                        cLanguage: slaLanguage.value
+                    }                    
+
+                    let stCase = localStorage.getItem(ms.cNumber);
+                    if(stCase !== null){
+                        let stored = JSON.parse(localStorage.getItem(ms.cNumber));
+                        Object.keys(ms).forEach(function (k){
+                            stored[k] = ms[k];
+                        });
+
+                        localStorage.setItem(ms.cNumber, JSON.stringify(stored));
+                    }
+                    else{
+                        localStorage.setItem(ms.cNumber, JSON.stringify(ms));
+                    }
+
+                    Look4Cases();
+                }
+                function GetCase(button){                    
+                    let data = JSON.parse(localStorage.getItem(button.name));
+                    cName.value = data.cName;
+                    cNumber.value = data.cNumber;
+                    cEmail.value = data.cEmail;
+                    cPhone.value = data.cPhone;
+                    //slaLanguage = data.slaLanguage;
+                    
+                }
+            </script>
         </div>
 
         <div id="tab2" class="tab-content active">
@@ -974,6 +1064,7 @@
         </div>
 
         <script>
+
             const buttons = document.querySelectorAll('.tab-btn');
             const contents = document.querySelectorAll('.tab-content');
 

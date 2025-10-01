@@ -108,13 +108,14 @@
                 <div class="reloj" id="mst"></div> 
             </fieldset>
         </fieldset>
-        <fieldset style="display: block;">
+        <fieldset style="display: none;">
             <legend><b>Engineer Alias</b></legend>
             <div>
                 <legend>Alias: <input id="eAlias" placeholder="Here goes your Alias" onchange="SetDate()"></legend>
             </div>
         </fieldset>
-        <fieldset style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+        <fieldset>
+        <!-- <fieldset style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;"> -->
             <fieldset>
                 <legend><b>Case Information</b></legend>
                 <div>
@@ -183,7 +184,7 @@
                     }
                 </script>
             </fieldset>
-            <fieldset>
+            <fieldset style="display: none;">
                 <legend><b>Stored Cases</b></legend>
                 <div id="storedC">
 
@@ -221,12 +222,13 @@
         </fieldset>
 
         <div class="tab-buttons">
-            <button class="tab-btn" data-tab="tab1">Master Note</button>
+            <button class="tab-btn" data-tab="tab1" disabled>Master Note</button>
             <button class="tab-btn active" data-tab="tab2">SLA</button>
             <button class="tab-btn" data-tab="tab3">Premier SLA</button>
             <button class="tab-btn" data-tab="tab4">Follow Up</button>
             <button class="tab-btn" data-tab="tab5">Closing</button>
             <button class="tab-btn" data-tab="tab6">SAW Request</button>
+            <button class="tab-btn" data-tab="tab7">22 Days Note</button>
         </div>
 
         <div id="tab1" class="tab-content">
@@ -1061,6 +1063,53 @@
                 <legend>Group Message Prompt</legend>
                 <div id="msg" contenteditable="false" style="border: 1px solid #ccc; padding: 10px;"></div>
             </fieldset>
+        </div>
+
+        <div id="tab7" class="tab-content">
+            <fieldset>
+                <legend><b>Case information</b></legend>
+                <div>
+                    Scope Agreement:<div></div>
+                    <textarea id="cScope"></textarea><div></div>
+                    Business Impact:<div></div>
+                    <textarea id="cImpact"></textarea><div></div>
+                    Observed Behavior:<div></div>
+                    <textarea id="cBehavior"></textarea><div></div>
+                    Action Plan:<div></div>
+                    <textarea id="cAction"></textarea>
+                </div>
+                <button onclick="OldCaseDaysNote()">Generate</button>
+            </fieldset>
+            <fieldset>
+                <div id="22days" contenteditable="false" style="border: 1px solid #ccc; padding: 10px;"></div>                
+            </fieldset>
+            <script>
+                function OldCaseDaysNote(){
+                    let scope = document.getElementById("cScope").value;
+                    let impact = document.getElementById("cImpact").value;
+                    let behavior = document.getElementById("cBehavior").value;
+                    let action = document.getElementById("cAction").value;
+
+
+                    template = "<b>Case Summary Note</b>\n"+
+                    "<ul>"+
+                        "<li>Case Number:</li>"+
+                            "<ul><li>"+cNumber.value+"</li></ul>"+
+                        "<li>Scope Agreement:</li>"+
+                            "<ul><li>"+scope+"</li></ul>"+
+                        "<li>Business Impact:</li>"+
+                            "<ul><li>"+impact+"</li></ul>"+
+                        "<li>Observed Behavior:</li>"+
+                            "<ul><li>"+behavior+"</li></ul>"+
+                        "<li>Relevant Screenshots:\n <b>REMEMBER INSERTING YOUR SCREENSHOTS</b></li>"+
+                        "<li>Action Plan:</li>"+
+                            "<ul><li>"+action+"</li></ul>"+
+                    "</ul>";
+
+                    document.getElementById("22days").innerHTML = template.replace(/\n/g,"<br>");
+                }
+            </script>
+
         </div>
 
         <script>

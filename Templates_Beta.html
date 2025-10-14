@@ -13,6 +13,11 @@
                 user-select: none;
             }
 
+            textarea{
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                font-size: 11pt;
+            }
+
             .reloj{
                 font-size: 15px;
                 font-family: 'Segoe UI', sans-serif;
@@ -23,7 +28,12 @@
             display: flex;
             margin-bottom: 10px;
             }
-            
+
+            .subtab-buttons {
+            display: flex;
+            margin-bottom: 10px;
+            }
+
             .generated-text{                
                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
                 font-size: 11pt;
@@ -51,7 +61,20 @@
             margin-right: 5px;
             }
 
+            .subtab-buttons button {
+            padding: 10px 20px;
+            border: 1px solid #ccc;
+            background-color: #eee;
+            cursor: pointer;
+            margin-right: 5px;
+            }
+
             .tab-buttons button.active {
+            background-color: #ddd;
+            font-weight: bold;
+            }
+
+            .subtab-buttons button.active {
             background-color: #ddd;
             font-weight: bold;
             }
@@ -62,7 +85,16 @@
             padding: 15px;
             }
 
+            .subtab-content {
+            display: none;            
+            padding: 15px;
+            }
+
             .tab-content.active {
+            display: block;
+            }
+
+            .subtab-content.active {
             display: block;
             }
 
@@ -112,7 +144,7 @@
             ShowIM();
             Look4Cases();
             setInterval(actualizarRelojes, 1000);
-            actualizarReloj();
+            actualizarRelojes();
             });
         </script>
     </head>    
@@ -189,6 +221,13 @@
                         <input type="radio" id="esp" name="language" value="esp">
                         <label for="esp">Spanish</label>
                     </div>
+                <legend>Case PCM:</legend>
+                <div>
+                    <input type="radio" id="email" name="pcm" value="email" checked="true" onclick="ShowPHTypes()">
+                    <label for="email">Email</label>
+                    <input type="radio" id="phone" name="pcm" value="phone" onclick="ShowPHTypes()">
+                    <label for="phone">Phone</label>
+                </div>
                 <button onclick="ClearFields()">Clear Fields</button>
                 <script>
                     const slaLanguage = document.querySelectorAll('input[name="language"]');
@@ -471,15 +510,6 @@
                 </select>
             </fieldset>
             <fieldset>
-                <legend>SLA Type</legend>
-                <div>
-                    <input type="radio" id="email" name="pcm" value="email">
-                    <label for="email">Email</label>
-                    <input type="radio" id="phone" name="pcm" value="phone">
-                    <label for="phone">Phone</label>
-                </div>
-            </fieldset>
-            <fieldset>
                 <legend>SLA Expiration</legend>
                 <div>
                     <input type="radio" id="onTime" name="expiration" value="ontime" onchange="ShowParams()">
@@ -524,7 +554,7 @@
             <script>
                 function Generate(){
                     template = "Hola Mundo";           
-                    const slaType = document.querySelector('input[name="pcm"]:checked').value;                
+                    const slaType = document.querySelector('input[name="pcm"]:checked').value;
                     const slaExpiration = document.querySelector('input[name="expiration"]:checked').value;
                     const slaLanguage = document.querySelector('input[name="language"]:checked').value;
                     const cKName = document.getElementById("nameRes").value;
@@ -685,14 +715,64 @@
 
         <!--Premier SLA-->
         <div id="tab3" class="tab-content">
-            <fieldset style="display: block">
+            
+
+            <fieldset>
+                <div>
+                    Its an Aged Case?
+                    <input type="checkbox" id="aged" onclick="ShowPHTypes()">
+                </div>
+            </fieldset>
+            
+            <script>
+                function ShowPHTypes(){
+                    const slaType = document.querySelector('input[name="pcm"]:checked').value;
+                    const aged = document.getElementById("aged").checked;
+                    if(aged === false){
+                        document.getElementById("eN").style.display = "none";
+                        if(slaType === "email"){
+                            document.getElementById("PH").style.display = "none";
+                        }
+                        if(slaType === "phone"){
+                            document.getElementById("PH").style.display = "block";
+                        }
+                    }
+                    else{
+                        document.getElementById("PH").style.display = "none";
+                        document.getElementById("eN").style.display = "block";
+                    }
+                    console.log(aged);
+                }
+            </script>
+
+            <fieldset id="PH" style="display: none;">
+                <legend>SLA Type</legend>
+                <div>
+                    <input type="radio" name="phType" id="ph0" value="ph0" checked="true">
+                    <label for="ph0">Call Answered</label>
+                    <input type="radio" name="phType" id="ph1" value="ph1">
+                    <label for="ph1">Long Call</label>
+                    <input type="radio" name="phType" id="ph2" value="ph2">
+                    <label for="ph2">Call not responded</label>
+                </div>
+            </fieldset>
+            
+            <fieldset id="eN" style="display: none;">
+                <legend>Extra Details</legend>
+                <div>
+                    Engineer name:
+                    <input type="text" id="eName">
+                </div>
+            </fieldset>
+
+            <fieldset style="display: none">
                 <legend>Files Upload Link:</legend>
                 <input type="text" id="cAtt" placeholder="Here goes the case attatchements upload link" style="height: 25px; width: 400px;">
             </fieldset>
             
             <fieldset>
-                <legend>Case Description:</legend>
-                <input type="text" id="cDes" placeholder="Here goes a brief description" style="height: 25px; width: 400px;">
+                <legend>Case Parafrasing:</legend>
+                <input type="text" id="cDes" placeholder="Here goes a brief parafrasing" style="height: 25px; width: 400px;">
             </fieldset>
             <div>
                 <button id="premSLA" onclick="GeneratePremSLA()">Generate Prem SLA</button>
@@ -700,7 +780,11 @@
 
             <script>
                 function GeneratePremSLA(){
+                    const slaType = document.querySelector('input[name="pcm"]:checked').value;
+                    const phType = document.querySelector('input[name="phType"]:checked').value;
                     const slaLanguage = document.querySelector('input[name="language"]:checked').value;
+                    const aged = document.getElementById("aged").checked;
+                    const eName = document.getElementById("eName").value;
                     const cKName = document.getElementById("nameRes").value;
                     const cName = document.getElementById("clientNameF").value;
                     const cNumber = document.getElementById("caseNumF").value;
@@ -709,6 +793,7 @@
                     const cDesc = document.getElementById("cDes").value;
                     const Att = document.getElementById("cAtt").value;
                     let cAtt;
+                    let template = "";
 
                     if(Att !== ""){
                         cAtt = `<a href="${Att}" class=".enlace-copiable">File Transfer - Case ${cNumber}</a>`;
@@ -718,6 +803,81 @@
                     }
 
                     if(slaLanguage === "eng"){
+                        if(slaType === "email"){
+                            if(aged === true){
+                                template = "Hello "+cName+",\n\n"+
+                                "Thank you for contacting Microsoft Customer Support!\n\n"+
+                                "My name is "+eName+" from Microsoft Support. I’m reaching out regarding the case <b>#"+cNumber+"</b> about "+cDesc+" so we can agree on the next best step together. We acknowledge that this message is arriving later than you would reasonably expect, and I apologize for the delay. I appreciate your patience while it was pending, but now that you are with me, I’ve placed it at the top of my work for today so we can move it forward without further delay. Rest assured that you are in good hands.\n\n"+
+                                "When you have a moment, could you let me know whether the issue is still ongoing or if things have stabilized on your side?\n\n"+
+                                "If continuing by email works best, these details will help us move quickly:\n\n"
+                                "<ol>"+
+                                "<li><b>HERE GOES YOUR SCOPING QUESTIONS</b></li>"+
+                                "</ol>\n"+
+                                "I would be happy to arrange a call if you prefer to discuss this request in detail. Please let me know your availability, and I will do my best to adjust my schedule to yours. Also, confirm if I can call you to the number, <b>"+cPhone+"</b>, registered on this ticket.\n\n"+
+                                "We are here to help you, so please do not hesitate to contact us if you have any questions or need more information about your ticket.\n\n"+
+                                "We look forward to hearing back from you at your earliest convenience!\n\n"+
+                                "Kind regards,\n\n";
+                            }
+                            else{
+                                template = "Dear "+cName+",\n\n"+
+                                "Thank you for contacting Microsoft Customer Support!\n\n"+
+                                "We have received your service request under the number <b>"+cNumber+"</b>.While we review the details provided in the case description, please remember that you can add additional information by replying directly to this email.\n\n"+
+                                "Your incident is a priority for us, and we are committed to providing you with a solution as soon as possible. We will be contacting you through the email address <b>"+cEmail+"</b> registered in our system.\n\n"+
+                                "We understand that you are facing a situation related to "+cDesc+". To better understand the case, we would appreciate it if you could answer the following questions:\n\n"+
+                                "<ol>"+
+                                "<li><b>HERE GOES YOUR SCOPING QUESTIONS</b></li>"+
+                                "</ol>\n"+
+                                "Alternatively, if you agree, I would be happy to coordinate a call to discuss this request in detail. Please let me know your availability and I will do my best to accommodate your schedule. I would also appreciate it if you could confirm whether I can contact you at the number registered on this ticket: <b>"+cPhone+"</b>.\n\n"+
+                                "Thank you for choosing Microsoft. We are here to help you.\n\n"+
+                                "Sincerely,\n\n";
+                            }                            
+                        }
+                        else if(slaType === "phone"){
+                            if(aged === true){
+                                template = "Hello "+cName+",\n\n"+
+                                "Thank you for contacting Microsoft Customer Support!\n\n"+
+                                "My name is "+eName+" from Microsoft Support. I’m reaching out regarding the case <b>#"+cNumber+"</b> about "+cDesc+" so we can agree on the next best step together. We acknowledge that this message is arriving later than you would reasonably expect, and I apologize for the delay. I appreciate your patience while it was pending, but now that you are with me, I’ve placed it at the top of my work for today so we can move it forward without further delay. Rest assured that you are in good hands.\n\n"+
+                                "Do you have a preferred time to be contacted and a preferred number? If there’s no preference, I will attempt a call shortly to this number <b>"+cPhone+"</b> listed on the case. If you would like me to use a different number, please reply with it.\n\n"+
+                                "We look forward to hearing back from you at your earliest convenience!\n\n"+
+                                "Best regards,\n\n";
+                            }
+                            else{
+                                if(phType === "ph0"){
+                                    template = "Dear "+cName+",\n\n"+
+                                    "Thank you for contacting Microsoft Customer Support.\n\n"+
+                                    "I appreciate the time you took to speak with me today related to your service request under the case number <b>"+cNumber+"</b>.\n\n"+
+                                    "We understand that you are experiencing an issue related to "+cDesc+".\n\n"+
+                                    "Below is a summary of our conversation:\n\n"+
+                                    "<b>HERE GOES YOUR CALL SUMMARY</b>\n\n"+
+                                    "Your case is important to us, and we are committed to resolving it as quickly as possible. We will continue to reach out to you at the phone number <b>"+cPhone+"</b> registered in our system.\n\n"+
+                                    "We look forward to continuing to work with you on this matter. If you have any further questions or concerns, please don’t hesitate to contact us.\n\n"+
+                                    "Thank you for choosing Microsoft. We’re here to help.\n\n"+
+                                    "Sincerely,\n\n";
+                                }
+                                else if(phType === "ph1"){
+                                    template = "Dear "+cName+",\n\n"+
+                                    "Thank you for contacting Microsoft Customer Support!\n\n"+
+                                    "I truly appreciate the time you're dedicating to this call, it's a pleasure to support you. I’d like to inform you that once our conversation concludes, I will be sending you a summary of our discussion along with the action plan we agree upon.\n\n"+
+                                    "This matter pertains to your request regarding "+cDesc+", linked to case number <b>"+cNumber+"</b>, which we will be handling according to our agreement.\n\n"+
+                                    "Thank you for choosing Microsoft. We’re here to help.\n\n"+
+                                    "Sincerely,\n\n";
+                                }
+                                else if(phType === "ph2"){
+                                    template = "Dear "+cName+",\n\n"+
+                                    "Thank you for contacting Microsoft Customer Support.\n\n"+
+                                    "We have received your service request under the case number <b>"+cNumber+"</b>. While we review the details provided in your case description, please feel free to share any additional information by replying directly to this email.\n\n"+
+                                    "Your issue is important to us, and we are committed to providing a resolution as quickly as possible. We attempted to reach you at the phone number listed in our system <b>"+cPhone+"</b>, but were unable to make contact.\n\n"+
+                                    "We understand that you are experiencing an issue related to "+cDesc+". To help us better understand and address your concern, we kindly ask that you respond to the following questions:\n\n"+
+                                    "<ol>"+
+                                    "<li><b>HERE GOES YOUR SCOPING QUESTIONS</b></li>"+
+                                    "</ol>\n"+
+                                    "Alternatively, if you prefer, I would be happy to arrange a call to discuss your request in more detail. Please let me know your availability, and I will do my best to accommodate your schedule. Additionally, please confirm whether I may contact you at the phone number associated with this case: <b>"+cPhone+"</b>.\n\n"+
+                                    "Thank you for choosing Microsoft.\n\n"+
+                                    "Sincerely,\n\n";
+                                }
+                            }
+                        }
+                        /*
                         template = "Dear "+cName+",\n\n"+
                         "Thank you very much for contacting Microsoft Customer Support!\n\n"+
                         "We have received this service request under the number <b>"+cNumber+"</b>. While we review the details provided in the case description, please remember that you can add additional information by replying to this email.\n\n"+
@@ -735,29 +895,85 @@
                         "</ol>\n\n"+
                         "You can use the following link to upload any file or screenshot that may help with the case.\n"+cAtt+"\n\n"+
                         "Alternatively, if you agree, I would be happy to arrange a call to discuss this request in detail. Please let me know your availability, and I will do my best to adjust my schedule to yours. Also, confirm if I can call you at the number registered in this ticket <b>"+cPhone+"</b>.\n\n"+
-                        "Warmest regards,\n\n";
+                        "Warmest regards,\n\n";*/
                     }
                     else if(slaLanguage === "esp"){
-                        template = "Hola "+cName+",\n\n"+
-                        "¡Muchas gracias por contactar al soporte al cliente de Microsoft!\n\n"+
-                        "Hemos recibido esta solicitud de servicio bajo el número <b>"+cNumber+"</b>. Mientras revisamos los detalles proporcionados en la descripción del caso, recuerde que puede agregar información adicional respondiendo a este correo electrónico.\n\n"+
-                        "Su incidente es nuestra prioridad y estamos comprometidos a proporcionarle una resolución lo más rápido posible. Nos pondremos en contacto con usted en la dirección de correo electrónico <b>"+cEmail+"</b>  registrada en nuestro sistema."+
-                        "Mientras tanto, nos gustaría recopilar más información sobre su solicitud de servicio. Entendemos que está intentando "+cDesc+".\n\n"+
-                        "Para abordar su preocupación de manera efectiva, nos gustaría usar un dispositivo de prueba con un usuario de prueba para trabajar en un entorno controlado. ¿Podría proporcionar la siguiente información?\n\n"+
-                        "<ul>"+
-                        "<li>UPN del usuario que registra los dispositivos:</li>"+
-                        "<li>ID de usuario de Intune:</li>"+
-                        "<li>Nombre del dispositivo:</li>"+
-                        "<li>Tipo de inscripción/registro que está intentando completar:</li>"+
-                        "</ul>\n\n"+
-                        "Además, ¿podría confirmar lo siguiente?\n"+
-                        "<ol>"+
-                        "<li><b>AQUI VAN TUS PREGUNTAS</b></li>"+
-                        "</ol>"+
-                        "Puede usar el siguiente enlace para cargar cualquier archivo o captura de pantalla que pueda ayudar con el caso.\n"+cAtt+"\n\n"+
-                        "Alternativamente, si está de acuerdo, me encantaría organizar una llamada para discutir esta solicitud en detalle. Por favor, hágamelo saber su disponibilidad y haré lo posible por ajustar mi horario al suyo. También confirme si puedo llamarlo al número registrado en este ticket <b>"+cPhone+"</b>.\n\n"+
-                        "Saludos cordiales,\n\n";
+                        if(slaType === "email"){
+                            if(aged === true){
+                                template = "Hola "+cName+",\n\n"+
+                                "¡Gracias por contactar al Soporte al Cliente de Microsoft!\n\n"+
+                                "Mi nombre es "+eName+" del equipo de Soporte de Microsoft. Me pongo en contacto en relación con el caso <b>#"+cNumber+"</b> sobre "+cDesc+" para que podamos acordar juntos el siguiente mejor paso. Reconozco que este mensaje llega más tarde de lo que razonablemente esperaría y le ofrezco una disculpa por la demora. Agradezco su paciencia mientras estaba pendiente; ahora que el caso está conmigo, lo he colocado como prioridad de hoy para avanzar sin más demora. Tenga la seguridad de que está en buenas manos.\n\n"+
+                                "Cuando tenga un momento, ¿podría indicarme si el problema continúa o si la situación se ha estabilizado de su lado?\n\n"+
+                                "Si prefiere continuar por correo, estos datos nos ayudarán a avanzar con rapidez:\n\n"
+                                "<ol>"+
+                                "<li><b>HERE GOES YOUR SCOPING QUESTIONS</b></li>"+
+                                "</ol>\n"+
+                                "Con gusto puedo coordinar una llamada si prefiere tratar esta solicitud en detalle. Indíqueme su disponibilidad y haré lo posible por ajustar mi agenda. Además, confirme si puedo llamarle al número <b>"+cPhone+"</b> registrado en este ticket.\n\n"+
+                                "Quedamos atentos a su respuesta a la brevedad posible.\n\n"+
+                                "Saludos cordiales,\n\n";
+                            }
+                            else{
+                                template = "Estimado "+cName+",\n\n"+
+                                "¡Gracias por contactar al Soporte al Cliente de Microsoft!\n\n"+
+                                "Hemos recibido tu solicitud de servicio bajo el número <b>"+cNumber+"</b>). Mientras revisamos los detalles proporcionados en la descripción del caso, recuerda que puedes agregar información adicional respondiendo directamente a este correo electrónico.\n\n"+
+                                "Tu incidente es una prioridad para nosotros, y estamos comprometidos a brindarte una solución a la brevedad posible. Nos estaremos comunicando contigo a través de la dirección de correo electrónico "+cEmail+" registrada en nuestro sistema.\n\n"+
+                                "Entendemos que estás enfrentando una situación relacionada con "+cDesc+". Para comprender mejor el caso, te agradeceríamos que respondas a las siguientes preguntas:\n\n"+
+                                "<ol>"+
+                                "<li><b>HERE GOES YOUR SCOPING QUESTIONS</b></li>"+
+                                "</ol>\n"+
+                                "Alternativamente, si estás de acuerdo, estaré encantado de coordinar una llamada para discutir esta solicitud en detalle. Por favor, indícame tu disponibilidad y haré lo posible por ajustarme a tu horario. También te agradecería confirmar si puedo contactarte al número registrado en este ticket: <b>"+cPhone+"</b>.\n\n"+
+                                "Gracias por elegir Microsoft. Estamos aquí para ayudarte.\n\n"+
+                                "Atentamente,\n\n";
+                            }
+                        }
+                        else if(slaType === "phone"){
+                            if(aged === true){
+                                template = "Hola "+cName+",\n\n"+
+                                "¡Gracias por contactar al Soporte al Cliente de Microsoft!\n\n"+
+                                "Mi nombre es "+eName+" del equipo de Soporte de Microsoft. Me pongo en contacto en relación con el caso <b>#"+cNumber+"</b> sobre "+cDesc+"para que podamos acordar juntos el siguiente mejor paso. Reconozco que este mensaje llega más tarde de lo que razonablemente esperaría y le ofrezco una disculpa por la demora. Agradezco su paciencia mientras estaba pendiente; ahora que el caso está conmigo, lo he colocado como prioridad de hoy para avanzar sin más demora. Tenga la seguridad de que está en buenas manos.\n\n"+
+                                "¿Tiene un horario y un número de contacto de preferencia? Si no hay preferencia, lo estaré contactando al número <b>"+cPhone+"</b> que figura en el caso. Si desea que utilice otro número, por favor indíquelo en su respuesta.\n\n"+
+                                "Quedamos atentos a su respuesta y esperamos poder conectarnos pronto.\n\n"+
+                                "Saludos cordiales,\n\n";
+                            }
+                            else{
+                                if(phType === "ph0"){
+                                    template = "Estimado "+cName+",\n\n"+
+                                    "Gracias por contactar al Soporte al Cliente de Microsoft.\n\n"+
+                                    "Agradezco el tiempo que se tomó para hablar conmigo hoy en relación a su solicitud de servicio bajo el número de caso <b>"+cNumber+"</b>.\n\n"+
+                                    "Entendemos que está experimentando un problema relacionado con "+cDesc+".\n\n"+
+                                    "A continuación, se presenta un resumen de nuestra conversación:\n\n"+
+                                    "<b>AQUI VA EL RESUMEN DE TU LLAMADA</b>\n\n"+
+                                    "Su caso es importante para nosotros y estamos comprometidos a resolverlo lo más pronto posible. Continuaremos contactándolo al número de teléfono <b>"+cPhone+"</b> registrado en nuestro sistema.\n\n"+
+                                    "Esperamos seguir colaborando con usted en este asunto. Si tiene más preguntas o inquietudes, no dude en comunicarse con nosotros.\n\n"+
+                                    "Gracias por elegir Microsoft. Estamos aquí para ayudarle.\n\n"+
+                                    "Atentamente,\n\n";
+                                }
+                                else if(phType === "ph1"){
+                                    template = "Estimado "+cName+",\n\n"+
+                                    "Gracias por contactar al Soporte al Cliente de Microsoft.\n\n"+
+                                    "Muchas gracias por el tiempo que me está brindando en estos momento durante nuestra llamada; es un placer atenderle. Esta comunicación tiene como objetivo informarle que, una vez finalizada nuestra interacción, le enviaré el resumen de nuestra conversación, así como el plan de acción que establezcamos.\n\n"+
+                                    "Esta solicited esta relacionada con "+cDesc+" correspondiente al caso número <b>"+cNumber+"</b>, el cual estaremos atendiendo conforme a lo acordado.\n\n"+
+                                    "Gracias por elegir Microsoft. Estamos aquí para ayudarle.\n\n"+
+                                    "Atentamente,\n\n"
+                                }
+                                else if(phType === "ph2"){
+                                    template = "Estimado "+cName+",\n\n"+
+                                    "Gracias por contactar al Soporte al Cliente de Microsoft.\n\n"+
+                                    "Hemos recibido su solicitud de servicio bajo el número de caso <b>"+cNumber+"</b>Mientras revisamos los detalles proporcionados en la descripción de su caso, no dude en compartir información adicional respondiendo directamente a este correo electrónico.\n\n"+
+                                    "Su situación es importante para nosotros, y estamos comprometidos a brindarle una solución lo antes posible. Intentamos comunicarnos con usted al número de teléfono registrado en nuestro sistema <b>"+cPhone+"</b>, pero no logramos establecer contacto.\n\n"+
+                                    "Entendemos que está experimentando un problema relacionado con "+cDesc+". Para ayudarnos a comprender mejor y abordar su inquietud, le agradeceríamos que respondiera las siguientes preguntas:\n\n"+
+                                    "<ol>"+
+                                    "<li><b>HERE GOES YOUR SCOPING QUESTIONS</b></li>"+
+                                    "</ol>\n"+
+                                    "Alternativamente, si lo prefiere, estaré encantado/a de coordinar una llamada para discutir su solicitud con más detalle. Por favor, indíquenos su disponibilidad y haré lo posible por ajustarme a su horario. También le agradecería que confirmara si puedo contactarle al número registrado en este caso: <b>"+cNumber+"</b>.\n\n"+
+                                    "Gracias por elegir Microsoft.\n\n"+
+                                    "Atentamente,\n\n";
+                                }
+                            }
+                        }
                     }
+
+                    console.log("PCM "+slaType+"\nLanguage "+slaLanguage+"\nPHtype "+phType);
 
                     document.getElementById("premResult").innerHTML = template.replace(/\n/g,"<br>");
                 }
@@ -806,10 +1022,15 @@
 
         <!--Follow Up-->
         <div id="tab4" class="tab-content">
-            <fieldset>
-                <legend>Follow Up Info</legend>
+            <div class="subtab-buttons">
+                <button class="subtab-btn active" data-tab="f1">Strike</button>
+                <button class="subtab-btn" data-tab="f2">Holydays</button>
+            </div>
+
+            <fieldset id="f1" class="subtab-content active">
+                <legend>Unresponsive Process</legend>
                 <div>
-                    <legend>Strike Number:</legend>
+                    <legend>Follow Up Number:</legend>
                     <input type="radio" id="st" name="sNum" value="1">
                     <label for="st">1</label>
                     <input type="radio" id="nd" name="sNum" value="2">
@@ -818,8 +1039,25 @@
                     <label for="th">3</label>
                 </div>
                 <div><legend>Time of the Call UTC-6: <input type="time" id="callTime"></legend></div>
-                <div><legend>Case Description: <input type="text" id="followDes" placeholder="Here goes the case description"></legend></div>
-                <button onclick="GenerateFollowUp()">Generate</button>
+                <div style="padding-top: 10px;"><legend>Case Description: <input type="text" id="followDes" placeholder="Here goes the case description"></legend></div>
+                <div style="padding-top: 10px;"><button onclick="GenerateFollowUp()">Generate</button></div>
+            </fieldset>
+
+            <fieldset id="f2" class="subtab-content">
+                <legend>Actual Holyday</legend>
+                <div>
+                    <input type="radio" name="hd" id="THNK" value="THNK">
+                    <label for="THNK">Thanksgiving</label>
+                    <input type="radio" name="hd" id="4J" value="4J">
+                    <label for="4J">4th of July</label>
+                    <input type="radio" name="hd" id="CD" value="CD">
+                    <label for="CD">Columbus Day</label>
+                    <input type="radio" name="hd" id="LD" value="LD">
+                    <label for="LD">Labour Day</label>
+                </div>
+                <div style="padding-top: 15px;">
+                    <button onclick="GenerateHolydays()">Generate</button>
+                </div>
             </fieldset>
 
             <fieldset>
@@ -827,6 +1065,50 @@
                 <div id="followUp"></div>
             </fieldset>
             <script>
+                function GenerateHolydays(){
+                    const hd = document.querySelector('input[name=hd]:checked').value;
+                    const cName = document.getElementById("clientNameF").value;
+                    const cNumber = document.getElementById("caseNumF").value;
+
+                    if(hd === "THNK"){
+                        template = "Dear "+cName+",\n\n"+
+                        "I hope this email finds you well.\n\n"+
+                        "Thank you very much for contacting Microsoft Customer Support!\n\n"+
+                        "As today we celebrate Thanksgiving, we want to take a moment to express our heartfelt gratitude and appreciation for your patience and understanding.\n\n"+
+                        "We will resume contact tomorrow to continue the follow-up on your case. In the meantime, please do not hesitate to reach out if you have any questions or require further assistance.\n\n"+
+                        "Thank you for your understanding and for choosing Microsoft!\n\n"+
+                        "Best regards,\n\n";
+                    }
+                    else if(hd === "CD"){
+                        template = "Dear "+cName+",\n\n"+
+                        "On this special day, we join in celebrating the spirit of exploration, discovery, and cultural heritage that defines Columbus Day.\n\n"+
+                        "Whether you're enjoying a well-deserved break or continuing your work today, we want to take a moment to thank you for being a valued part of our community.\n\n"+
+                        "Our support team remains fully available, so if you're in the office or need assistance, rest assured that we’re here to help you as usual with any support requests.\n\n"+
+                        "We hope this long weekend brings you moments of rest, reflection, and celebration with your loved ones.\n\n"+
+                        "Happy Columbus Day!\n\n"+
+                        "Regards,\n\n";
+                    }
+                    else if(hd === "LD"){
+                        template = "Dear "+cName+",\n\n"+
+                        "Happy Labor Day to you. We hope today offers a moment to pause and feel appreciated for all that you do.\n\n"+
+                        "This is a friendly note to let you know that your support case <b>"+cNumber+"</b> remains on our radar. While today is a U.S. federal holiday, we are here and keeping an eye on your request so it doesn’t fall off track.\n\n"+
+                        "If you’re working today, please know we’re available and happy to continue supporting you. Otherwise, we will resume full processing on the next business day with the same care and attention.\n\n"+
+                        "Thank you for being a valued part of our community. Wishing you a pleasant holiday.\n\n"+
+                        "Warm regards,\n\n";
+                    }
+                    else if(hd === "4J"){
+                        template = "Dear "+cName+",\n\n"+
+                        "On this special day, we join in celebrating the spirit of freedom, unity, and resilience that defines Independence Day.\n\n"+
+                        "Whether you're enjoying a well-deserved break or continuing your work today, we want to take a moment to thank you for being a valued part of our community.\n\n"+
+                        "Our support team remains fully available, so if you're in the office or need assistance, rest assured that we’re here to help you as usual with any support requests.\n\n"+
+                        "We hope this long weekend brings you moments of rest and celebration with your loved ones.\n\n"+
+                        "Happy 4th of July!\n\n"+
+                        "Regards,\n\n";
+                    }
+
+                    document.getElementById("followUp").innerHTML = template.replace(/\n/g,"<br>");
+                }
+
                 function GenerateFollowUp(){
                     const cName = document.getElementById("clientNameF").value;
                     const cNumber = document.getElementById("caseNumF").value;
@@ -959,29 +1241,57 @@
                         const cLanguage = document.querySelector('input[name="language"]:checked').value;
 
                         if(cLanguage === "eng"){
-                            template = "Dear "+cName+",\n\n"+
-                            "Thank you very much for contacting Microsoft Customer Support!\n\n"+
-                            "Your feedback is important to us. A feedback request option will appear within the case in M365 Admin Center with an opportunity to tell us about your experience.\n"+cSurvey+"\n\n"+
-                            "Your opinion is valuable to us!\n\n"+
-                            "Thank you for your time and cooperation. I will proceed to archive this service request <b>#"+cNumber+"</b>. If any additional issues related to this case arise, you can request its reopening.\n\n"+
-                            "Below, I include a summary of the incident:\n\n"+
-                            "<b>Symptom:</b>\n"+cSympt+"\n\n"+
-                            "<b>Cause:</b>\n"+cCause+"\n\n"+
-                            "<b>Solution:</b>\n"+cSolution+"\n\n"+
-                            "Best regards,\n\n";
+                            if(Survey !== ""){
+                                template = "Dear "+cName+",\n\n"+
+                                "Thank you very much for contacting Microsoft Customer Support!\n\n"+
+                                "Your feedback is important to us. A feedback request option will appear within the case in M365 Admin Center with an opportunity to tell us about your experience.\n"+cSurvey+"\n\n"+
+                                "Your opinion is valuable to us!\n\n"+
+                                "Thank you for your time and cooperation. I will proceed to archive this service request <b>#"+cNumber+"</b>. If any additional issues related to this case arise, you can request its reopening.\n\n"+
+                                "Below, I include a summary of the incident:\n\n"+
+                                "<b>Symptom:</b>\n"+cSympt+"\n\n"+
+                                "<b>Cause:</b>\n"+cCause+"\n\n"+
+                                "<b>Solution:</b>\n"+cSolution+"\n\n"+
+                                "Best regards,\n\n";
+                            }
+                            else{
+                                template = "Dear "+cName+",\n\n"+
+                                "Thank you very much for contacting Microsoft Customer Support!\n\n"+
+                                "Your feedback is important to us. A feedback request option will appear within the case in M365 Admin Center with an opportunity to tell us about your experience."+cSurvey+"\n\n"+
+                                "Your opinion is valuable to us!\n\n"+
+                                "Thank you for your time and cooperation. I will proceed to archive this service request <b>#"+cNumber+"</b>. If any additional issues related to this case arise, you can request its reopening.\n\n"+
+                                "Below, I include a summary of the incident:\n\n"+
+                                "<b>Symptom:</b>\n"+cSympt+"\n\n"+
+                                "<b>Cause:</b>\n"+cCause+"\n\n"+
+                                "<b>Solution:</b>\n"+cSolution+"\n\n"+
+                                "Best regards,\n\n";
+                            }
                         }
                         else if (cLanguage === "esp")
                         {
-                            template = "Estimado "+cName+",\n\n"+
-                            "¡Muchas gracias por contactar al soporte al cliente de Microsoft!\n\n"+
-                            "Sus comentarios son importantes para nosotros. Después de esta interacción, quedará disponible en el Centro de Administración M365 un pedido de opinión, donde podrá informarnos sobre su experiencia de soporte.\n"+cSurvey+"\n\n"+
-                            "¡Su opinión es valiosa para nosotros!\n\n"+
-                            "Gracias por su tiempo y colaboración. Voy a proceder al archivado de esta solicitud de servicio <b>#"+cNumber+"</b>. Si surgiese algún problema adicional relacionado con este caso, puede solicitar la reapertura del mismo.\n\n"+
-                            "A continuación, incluyo un resumen de la incidencia:\n\n"+
-                            "<b>Sintoma:</b>\n"+cSympt+"\n\n"+
-                            "<b>Causa:</b>\n"+cCause+"\n\n"+
-                            "<b>Solución:</b>\n"+cSolution+"\n\n"+
-                            "Saludos cordiales,\n\n";
+                            if(Survey !== ""){
+                                template = "Estimado "+cName+",\n\n"+
+                                "¡Muchas gracias por contactar al soporte al cliente de Microsoft!\n\n"+
+                                "Sus comentarios son importantes para nosotros. Después de esta interacción, quedará disponible en el Centro de Administración M365 un pedido de opinión, donde podrá informarnos sobre su experiencia de soporte.\n"+cSurvey+"\n\n"+
+                                "¡Su opinión es valiosa para nosotros!\n\n"+
+                                "Gracias por su tiempo y colaboración. Voy a proceder al archivado de esta solicitud de servicio <b>#"+cNumber+"</b>. Si surgiese algún problema adicional relacionado con este caso, puede solicitar la reapertura del mismo.\n\n"+
+                                "A continuación, incluyo un resumen de la incidencia:\n\n"+
+                                "<b>Sintoma:</b>\n"+cSympt+"\n\n"+
+                                "<b>Causa:</b>\n"+cCause+"\n\n"+
+                                "<b>Solución:</b>\n"+cSolution+"\n\n"+
+                                "Saludos cordiales,\n\n";
+                            }
+                            else{
+                                template = "Estimado "+cName+",\n\n"+
+                                "¡Muchas gracias por contactar al soporte al cliente de Microsoft!\n\n"+
+                                "Sus comentarios son importantes para nosotros. Después de esta interacción, quedará disponible en el Centro de Administración M365 un pedido de opinión, donde podrá informarnos sobre su experiencia de soporte."+cSurvey+"\n\n"+
+                                "¡Su opinión es valiosa para nosotros!\n\n"+
+                                "Gracias por su tiempo y colaboración. Voy a proceder al archivado de esta solicitud de servicio <b>#"+cNumber+"</b>. Si surgiese algún problema adicional relacionado con este caso, puede solicitar la reapertura del mismo.\n\n"+
+                                "A continuación, incluyo un resumen de la incidencia:\n\n"+
+                                "<b>Sintoma:</b>\n"+cSympt+"\n\n"+
+                                "<b>Causa:</b>\n"+cCause+"\n\n"+
+                                "<b>Solución:</b>\n"+cSolution+"\n\n"+
+                                "Saludos cordiales,\n\n";
+                            }
                         }
 
                         result = boldString(template,)
@@ -1194,13 +1504,13 @@
                 <legend><b>Case information</b></legend>
                 <div>
                     Scope Agreement:<div></div>
-                    <textarea id="cScope"></textarea><div></div>
+                    <textarea id="cScope" style="width: 400px; height: 150px;"></textarea><div></div>
                     Business Impact:<div></div>
-                    <textarea id="cImpact"></textarea><div></div>
+                    <textarea id="cImpact" style="width: 400px; height: 150px;"></textarea><div></div>
                     Observed Behavior:<div></div>
-                    <textarea id="cBehavior"></textarea><div></div>
+                    <textarea id="cBehavior" style="width: 400px; height: 150px;"></textarea><div></div>
                     Action Plan:<div></div>
-                    <textarea id="cAction"></textarea>
+                    <textarea id="cAction" style="width: 400px; height: 150px;"></textarea>
                 </div>
                 <button onclick="OldCaseDaysNote()">Generate</button>
             </fieldset>
@@ -1238,8 +1548,22 @@
 
         <script>
 
+            const subButtons = document.querySelectorAll('.subtab-btn');
+            const subContents = document.querySelectorAll('.subtab-content');
             const buttons = document.querySelectorAll('.tab-btn');
             const contents = document.querySelectorAll('.tab-content');
+
+            subButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    // Quitar clase activa de todos
+                    subButtons.forEach(btn => btn.classList.remove('active'));
+                    subContents.forEach(content => content.classList.remove('active'));
+
+                    // Activar el seleccionado
+                    button.classList.add('active');
+                    document.getElementById(button.dataset.tab).classList.add('active');
+                });
+            });
 
             buttons.forEach(button => {
                 button.addEventListener('click', () => {

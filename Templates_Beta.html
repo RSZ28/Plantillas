@@ -149,7 +149,7 @@
         </script>
     </head>    
     <body>
-        <h1>SLA Template</h1>        
+        <h1>Intune QA Templates</h1>        
         <fieldset style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
             <legend><b>Time Zones</b></legend>
             <fieldset>
@@ -176,9 +176,49 @@
             <fieldset>
                 <legend><b>Case Information</b></legend>
                 <div>
+                    <b style="color: #ff000f;">IT'S SEV A?</b>
+                    <input type="checkbox" id="sevA" onchange="SetSEVAFollowUp()">
+                </div>
+                <div>
                     Do you know the client's name?
                     <input type="checkbox" id="nameRes" checked="True" onchange="SetName()">
                     <script>
+                        function SetSEVAFollowUp(){
+                            const subButtons = document.querySelectorAll('.subtab-btn');
+                            const subContents = document.querySelectorAll('.subtab-content');
+                            const buttons = document.querySelectorAll('.tab-btn');
+                            const contents = document.querySelectorAll('.tab-content');
+                            const sevA = document.getElementById("sevA").checked;
+                            
+                            subButtons.forEach(button => {
+                                button.classList.remove('active');
+                            });
+                            subContents.forEach(cnt => {
+                                cnt.classList.remove('active');
+                            });
+                            buttons.forEach(bnt => {
+                                bnt.classList.remove('active');
+                            });
+                            contents.forEach(cnt => {
+                                cnt.classList.remove('active');
+                            });
+                            
+                            if(sevA === true){
+                                document.getElementById("PCM").style.display = "none";
+                                document.getElementById("tab4BNT").classList.add('active');
+                                document.getElementById("tab4").classList.add('active');
+                                document.getElementById("fA").classList.add('active');
+                                document.getElementById("fAbutton").classList.add('active');
+                            }
+                            else{
+                                document.getElementById("PCM").style.display = "block";
+                                document.getElementById("tab2BNT").classList.add('active');
+                                document.getElementById("tab2").classList.add('active');
+                                document.getElementById("f1").classList.add('active');
+                                document.getElementById("fButton").classList.add('active');
+                            }
+                        }
+
                         function SetName(){
                             const check = document.getElementById("nameRes");
                             const field = document.getElementById("clientNameF");
@@ -215,18 +255,20 @@
                     <input type="text" id="clientPhoneF" placeholder="Here goes the client's phone">
                 </div>
                 <legend>Case Languange:</legend>
-                    <div>
-                        <input type="radio" id="eng" name="language" value="eng" checked="True">
-                        <label for="eng">English</label>
-                        <input type="radio" id="esp" name="language" value="esp">
-                        <label for="esp">Spanish</label>
-                    </div>
-                <legend>Case PCM:</legend>
                 <div>
-                    <input type="radio" id="email" name="pcm" value="email" checked="true" onclick="ShowPHTypes()">
-                    <label for="email">Email</label>
-                    <input type="radio" id="phone" name="pcm" value="phone" onclick="ShowPHTypes()">
-                    <label for="phone">Phone</label>
+                    <input type="radio" id="eng" name="language" value="eng" checked="True">
+                    <label for="eng">English</label>
+                    <input type="radio" id="esp" name="language" value="esp">
+                    <label for="esp">Spanish</label>
+                </div>
+                <div id="PCM">
+                    <legend>Case PCM:</legend>
+                    <div>
+                        <input type="radio" id="email" name="pcm" value="email" checked="true" onclick="ShowPHTypes()">
+                        <label for="email">Email</label>
+                        <input type="radio" id="phone" name="pcm" value="phone" onclick="ShowPHTypes()">
+                        <label for="phone">Phone</label>
+                    </div>
                 </div>
                 <button onclick="ClearFields()">Clear Fields</button>
                 <script>
@@ -287,9 +329,9 @@
 
         <div class="tab-buttons">
             <button class="tab-btn" data-tab="tab1" style="display: none;">Master Note</button>
-            <button class="tab-btn active" data-tab="tab2">SLA</button>
+            <button class="tab-btn active" id="tab2BNT" data-tab="tab2">SLA</button>
             <button class="tab-btn" data-tab="tab3">Premier SLA</button>
-            <button class="tab-btn" data-tab="tab4">Follow Up</button>
+            <button class="tab-btn" id="tab4BNT" data-tab="tab4">Follow Up</button>
             <button class="tab-btn" data-tab="tab5">Closure</button>
             <button class="tab-btn" data-tab="tab6">SAW Request</button>
             <button class="tab-btn" data-tab="tab7">22 Days Note</button>
@@ -749,7 +791,7 @@
                 <legend>SLA Type</legend>
                 <div>
                     <input type="radio" name="phType" id="ph0" value="ph0" checked="true">
-                    <label for="ph0">Call Answered</label>
+                    <label for="ph0">Answered Call</label>
                     <input type="radio" name="phType" id="ph1" value="ph1">
                     <label for="ph1">Long Call</label>
                     <input type="radio" name="phType" id="ph2" value="ph2">
@@ -1023,15 +1065,32 @@
         <!--Follow Up-->
         <div id="tab4" class="tab-content">
             <div class="subtab-buttons">
-                <button class="subtab-btn active" data-tab="f1">Strike</button>
+                <button class="subtab-btn" id="fAbutton" data-tab="fA">SEV A</button>
+                <button class="subtab-btn active" id="fButton" data-tab="f1">Strike</button>
                 <button class="subtab-btn" data-tab="f2">Holydays</button>
             </div>
 
+            <fieldset id="fA" class="subtab-content">
+                <legend>SEV A Unresponsive Process</legend>
+                <div>
+                    <legend>Follow Up Number:</legend>
+                    <input type="radio" id="stA" name="sAnum" value="1" checked>
+                    <label for="stA">1</label>
+                    <input type="radio" id="ndA" name="sAnum" value="2">
+                    <label for="ndA">2</label>
+                    <input type="radio" id="thA" name="sAnum" value="3">
+                    <label for="thA">3</label>
+                </div>
+                <div><legend>Time of the Call UTC-6: <input type="time" id="callTime"></legend></div>
+                <div style="padding-top: 10px;"><legend>Case Description: <input type="text" id="followDes" placeholder="Here goes the case description"></legend></div>
+                <div style="padding-top: 10px;"><button onclick="GenerateSEVAFollowUp()">Generate</button></div>
+            </fieldset>
+                
             <fieldset id="f1" class="subtab-content active">
                 <legend>Unresponsive Process</legend>
                 <div>
                     <legend>Follow Up Number:</legend>
-                    <input type="radio" id="st" name="sNum" value="1">
+                    <input type="radio" id="st" name="sNum" value="1" checked>
                     <label for="st">1</label>
                     <input type="radio" id="nd" name="sNum" value="2">
                     <label for="nd">2</label>
@@ -1065,6 +1124,90 @@
                 <div id="followUp"></div>
             </fieldset>
             <script>
+                function GenerateSEVAFollowUp(){
+                    const cName = document.getElementById("clientNameF").value;
+                    const cNumber = document.getElementById("caseNumF").value;
+                    const cPhone = document.getElementById("clientPhoneF").value;
+                    const cDes = document.getElementById("followDes").value;
+                    const timeReference = document.getElementById("callTime").value;
+                    const slaLanguage = document.querySelector('input[name="language"]:checked').value;
+                    const strikeNum = document.querySelector('input[name="sAnum"]:checked').value;
+
+                    //#region 12 Hours format conversor
+                    let [h, min] = timeReference.split(':');
+                    let hours = parseInt(h,10);
+                    let dayzone = '';
+                    if(hours === 0){
+                        hours = 12;
+                        dayzone = 'am';
+                    }
+                    else if(hours === 12){
+                        dayzone = 'pm';
+                    }
+                    else if(hours > 12){
+                        hours -= 12;
+                        dayzone = 'pm';
+                    }
+                    else{
+                        dayzone = 'am';
+                    }
+                    let callTime = hours+":"+min+dayzone;
+                    //#endregion
+
+                    if(slaLanguage === "eng"){
+                        if(strikeNum === "1"){
+                            template = "Dear "+cName+",\n\n"+
+                            "I attempted to contact you today at <b>"+callTime+" UTC-6</b> using the phone number listed in your case but was unable to reach you.\n\n"+
+                            "As we have not yet received a response, I’m following up regarding your support request <b>"+cNumber+"</b> related to <b>"+cDes+"</b>\n\n"+
+                            "Please let me know your availability, including date and time, so we can schedule a call at your convenience. If I don’t hear back, I’ll try reaching out again within the next 30 minutes.\n\n"+
+                            "Thank you in advance for your prompt response\n\n"+
+                            "Kind regards,\n\n";
+                        }
+                        else if(strikeNum === "2"){
+                            template = "Dear "+cName+",\n\n"+
+                            "I attempted to contact you today at <b>"+callTime+" UTC-6</b> at the phone number registered in your case <b>"+cPhone+"</b>, but I was unable to reach you.\n\n"+
+                            "As we have not yet received a response, I would like to follow up on your support request <b>"+cNumber+"</b> regarding <b>"+cDes+"</b>.\n\n"+
+                            "I would appreciate it if you could confirm your availability, date, and time via this channel so we can schedule a call at your convenience. If we do not receive a response, I will attempt to contact you again within the next 30 minutes.\n\n"+
+                            "We greatly appreciate your attention. If we are unable to establish contact within the indicated timeframe, the severity of the case will be reduced in accordance with our policies.\n\n"+
+                            "Kind regards,\n\n";
+                        }
+                        else if(strikeNum === "3"){
+                            template = "Dear "+cName+",\n\n"+
+                            "I attempted to contact you today at <b>"+callTime+" UTC-6</b> at the phone number registered in your case <b>"+cPhone+"</b>, but I was unable to reach you.\n\n"+
+                            "As we have not received a response to our previous attempts to contact you regarding your support request <b>"+cNumber+"</b> related to <b>"+cDes+"</b>, we would like to inform you that the severity level of the case has been lowered in accordance with our support policies.\n\n"+
+                            "Should you wish to raise the severity level again or require immediate assistance, please do not hesitate to reach out to us directly or contact your Customer Success Account Manager (CSAM).\n\n"+
+                            "We remain committed to supporting you and look forward to your response.\n\n"+
+                            "Kind regards,\n\n";
+                        }
+                    }
+                    else if(slaLanguage === "esp"){
+                        template = "Estimado/a "+cName+",\n\n";
+                        if(strikeNum === "1"){
+                            template += "Intenté comunicarme con usted hoy a las <b>"+callTime+" UTC-6</b> al número registrado en su caso, pero no fue posible localizarle.\n\n"+
+                            "Dado que aún no hemos recibido respuesta, aprovecho para dar seguimiento a su solicitud de soporte <b>"+cNumber+"</b> relacionada con <b>"+cDes+"</b>.\n\n"+
+                            "Le agradecería que me confirmara por esta vía su disponibilidad, fecha y hora, para coordinar una llamada en el momento que le resulte más conveniente. Si no recibo respuesta, intentaré contactarle nuevamente en los próximos 30 minutos.\n\n"+
+                            "Agradezco de antemano su pronta respuesta.\n\n"+
+                            "Saludos cordiales,\n\n";
+                        }
+                        else if(strikeNum === "2"){
+                            template += "Intenté comunicarme con usted hoy a las <b>"+callTime+" UTC-6</b> al número registrado en su caso <b>"+cPhone+"</b>, perono fue posible localizarle.\n\n"+
+                            "Dado que aún no hemos recibido respuesta, quisiera dar seguimiento a su solicitud de soporte <b>"+cNumber+"</b> relacionada con <b>"+cDes+"</b>.\n\n"+
+                            "Le agradecería que me confirmara por esta vía su disponibilidad, fecha y hora, para coordinar una llamada en el momento que le sea más conveniente. Si no recibimos respuesta, intentaré contactarle nuevamente en los próximos 30 minutos.\n\n"+
+                            "Agradecemos mucho su atención. Si no logramos establecer contacto dentro del plazo indicado, la severidad del caso se reducirá conforme a nuestras políticas.\n\n"+
+                            "Saludos cordiales,\n\n";
+                        }
+                        else if(strikeNum === "3"){
+                            template += "Intenté comunicarme con usted hoy a las <b>"+callTime+" UTC-6</b> al número registrado en su caso <b>"+cPhone+"</b>, pero no fue posible localizarle.\n\n"+
+                            "Dado que no hemos recibido respuesta a nuestros intentos previos de contacto respecto a su solicitud de soporte <b>"+cNumber+"</b> relacionada con <b>"+cDes+"</b>, queremos informarle que el nivel de severidad del caso ha sido reducido conforme a nuestras políticas de soporte.\n\n"+
+                            "Si desea elevar nuevamente el nivel de severidad o necesita asistencia inmediata, no dude en comunicarse directamente con nosotros o contactar a su CSAM.\n\n"+
+                            "Seguimos comprometidos con brindarle el mejor soporte y quedamos atentos a su respuesta.\n\n"+
+                            "Atentamente,\n\n";
+                        }
+                    }
+                    document.getElementById("followUp").innerHTML = template.replace(/\n/g,"<br>");
+
+                }
+
                 function GenerateHolydays(){
                     const hd = document.querySelector('input[name=hd]:checked').value;
                     const cName = document.getElementById("clientNameF").value;

@@ -109,6 +109,30 @@
         <title>Intune Templates</title>        
         <link rel="stylesheet" href="style.css">
         <script>
+            var templatesContent = {};
+            async function GetTemplates(){
+                const url = 'https://raw.githubusercontent.com/RSZ28/Templates_Content/refs/heads/main/Templates_Content.json';
+
+                try{
+                    const rsp = await fetch(url);
+                    if(!rsp.ok) throw new Error('Download Error');
+
+                    const txt = await rsp.text();
+                    //console.log(txt);
+                    //const temp = "[" + txt.trim().replace(/,\s*$/,"") + "]";                    
+                    const tmpJSON = JSON.parse(txt);                    
+
+                    tmpJSON.forEach(i => {
+                        templatesContent[i.Columna1] = i.Columna2;
+                    });
+
+                    
+                } catch(error){
+                    console.error('Error: ',error);
+                }
+
+                //console.error(JSON.stringify(templatesContent));
+            }
 
             function boldString(str , substr){
                 strRegExp = new RegExp(substr, 'g');
@@ -116,7 +140,8 @@
             }
 
             document.addEventListener("DOMContentLoaded", function() {
-                SetName();               
+                GetTemplates();
+                SetName();
                 function actualizarRelojes() {
                 let date = new Date();
                 let ahora;
@@ -1081,8 +1106,8 @@
                     <input type="radio" id="thA" name="sAnum" value="3">
                     <label for="thA">3</label>
                 </div>
-                <div><legend>Time of the Call UTC-6: <input type="time" id="callTime"></legend></div>
-                <div style="padding-top: 10px;"><legend>Case Description: <input type="text" id="followDes" placeholder="Here goes the case description"></legend></div>
+                <div><legend>Time of the Call UTC-6: <input type="time" id="callTimeA"></legend></div>
+                <div style="padding-top: 10px;"><legend>Case Description: <input type="text" id="followADes" placeholder="Here goes the case description"></legend></div>
                 <div style="padding-top: 10px;"><button onclick="GenerateSEVAFollowUp()">Generate</button></div>
             </fieldset>
                 
@@ -1128,8 +1153,8 @@
                     const cName = document.getElementById("clientNameF").value;
                     const cNumber = document.getElementById("caseNumF").value;
                     const cPhone = document.getElementById("clientPhoneF").value;
-                    const cDes = document.getElementById("followDes").value;
-                    const timeReference = document.getElementById("callTime").value;
+                    const cDes = document.getElementById("followADes").value;
+                    const timeReference = document.getElementById("callTimeA").value;
                     const slaLanguage = document.querySelector('input[name="language"]:checked').value;
                     const strikeNum = document.querySelector('input[name="sAnum"]:checked').value;
 
